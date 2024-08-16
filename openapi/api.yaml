@@ -2,10 +2,33 @@ openapi: 3.0.0
 info:
   title: Taskly API
   version: 1.0.0
+  description: 'API for Taskly application'
+  contact:
+    name: Support Team
+    email: support@taskly.example.com
+    url: https://taskly.example.com/support
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+tags:
+  - name: Board Management
+    description: Endpoints for creating and retrieving boards
+  - name: Notification Management
+    description: Endpoints for retrieving notifications
+  - name: Organization Management
+    description: Endpoints for creating and managing organizations
+  - name: Task Management
+    description: Endpoints for creating and retrieving tasks
+  - name: User Management
+    description: Endpoints for user registration and login
 paths:
   /register:
     post:
       summary: Register a new user
+      operationId: registerUser
+      tags:
+        - User Management
+      description: Registers a new user with the provided username, password, and organization name.
       requestBody:
         required: true
         content:
@@ -36,6 +59,10 @@ paths:
   /login:
     post:
       summary: Login a user
+      operationId: loginUser
+      tags:
+        - User Management
+      description: Logs in a user and returns a JWT token for authentication.
       requestBody:
         required: true
         content:
@@ -62,6 +89,10 @@ paths:
   /organizations:
     post:
       summary: Create a new organization
+      operationId: createOrganization
+      tags:
+        - Organization Management
+      description: Creates a new organization with the given name.
       security:
         - bearerAuth: []
       requestBody:
@@ -90,6 +121,10 @@ paths:
   /boards:
     get:
       summary: Get boards for an organization
+      operationId: getBoards
+      tags:
+        - Board Management
+      description: Retrieves all boards for the authenticated organization.
       security:
         - bearerAuth: []
       responses:
@@ -110,6 +145,10 @@ paths:
           description: Unauthorized
     post:
       summary: Create a new board
+      operationId: createBoard
+      tags:
+        - Board Management
+      description: Creates a new board with the given name for the authenticated organization.
       security:
         - bearerAuth: []
       requestBody:
@@ -140,29 +179,37 @@ paths:
   /tasks/{boardId}:
     get:
       summary: Get tasks for a board
+      operationId: getTasks
+      tags:
+        - Task Management
+      description: Retrieves all tasks for a specific board, with optional filters.
       security:
         - bearerAuth: []
       parameters:
         - in: path
           name: boardId
           required: true
+          description: The ID of the board
           schema:
             type: string
-          description: The ID of the board
         - in: query
           name: status
+          description: Status of the tasks to filter
           schema:
             type: string
         - in: query
           name: assignee
+          description: Assignee of the tasks to filter
           schema:
             type: string
         - in: query
           name: priority
+          description: Priority of the tasks to filter
           schema:
             type: string
         - in: query
           name: labels
+          description: Labels to filter tasks
           schema:
             type: string
       responses:
@@ -203,15 +250,19 @@ paths:
           description: Unauthorized
     post:
       summary: Create a new task
+      operationId: createTask
+      tags:
+        - Task Management
+      description: Creates a new task within a specific board.
       security:
         - bearerAuth: []
       parameters:
         - in: path
           name: boardId
           required: true
+          description: The ID of the board
           schema:
             type: string
-          description: The ID of the board
       requestBody:
         required: true
         content:
@@ -282,6 +333,10 @@ paths:
   /notifications:
     get:
       summary: Get notifications for a user
+      operationId: getNotifications
+      tags:
+        - Notification Management
+      description: Retrieves all notifications for the authenticated user.
       security:
         - bearerAuth: []
       responses:
