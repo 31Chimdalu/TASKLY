@@ -1,0 +1,311 @@
+openapi: 3.0.0
+info:
+  title: Taskly API
+  version: 1.0.0
+paths:
+  /register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                organizationName:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                  organizationId:
+                    type: string
+        '400':
+          description: Bad request
+  /login:
+    post:
+      summary: Login a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: A JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '401':
+          description: Invalid credentials
+  /organizations:
+    post:
+      summary: Create a new organization
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Organization created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  id:
+                    type: string
+        '400':
+          description: Bad request
+  /boards:
+    get:
+      summary: Get boards for an organization
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of boards
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    id:
+                      type: string
+        '401':
+          description: Unauthorized
+    post:
+      summary: Create a new board
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Board created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  id:
+                    type: string
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+  /tasks/{boardId}:
+    get:
+      summary: Get tasks for a board
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: boardId
+          required: true
+          schema:
+            type: string
+          description: The ID of the board
+        - in: query
+          name: status
+          schema:
+            type: string
+        - in: query
+          name: assignee
+          schema:
+            type: string
+        - in: query
+          name: priority
+          schema:
+            type: string
+        - in: query
+          name: labels
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    priority:
+                      type: string
+                    labels:
+                      type: array
+                      items:
+                        type: string
+                    status:
+                      type: string
+                    startDate:
+                      type: string
+                      format: date-time
+                    dueDate:
+                      type: string
+                      format: date-time
+                    assignee:
+                      type: string
+                    attachments:
+                      type: array
+                      items:
+                        type: string
+        '401':
+          description: Unauthorized
+    post:
+      summary: Create a new task
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: boardId
+          required: true
+          schema:
+            type: string
+          description: The ID of the board
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                priority:
+                  type: string
+                labels:
+                  type: array
+                  items:
+                    type: string
+                status:
+                  type: string
+                startDate:
+                  type: string
+                  format: date-time
+                dueDate:
+                  type: string
+                  format: date-time
+                assignee:
+                  type: string
+                attachments:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  priority:
+                    type: string
+                  labels:
+                    type: array
+                    items:
+                      type: string
+                  status:
+                    type: string
+                  startDate:
+                    type: string
+                    format: date-time
+                  dueDate:
+                    type: string
+                    format: date-time
+                  assignee:
+                    type: string
+                  attachments:
+                    type: array
+                    items:
+                      type: string
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+  /notifications:
+    get:
+      summary: Get notifications for a user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                    read:
+                      type: boolean
+                    createdAt:
+                      type: string
+                      format: date-time
+        '401':
+          description: Unauthorized
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
